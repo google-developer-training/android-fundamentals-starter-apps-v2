@@ -28,7 +28,7 @@ class Sport {
     /**
      * Constructor for the Sport data model.
      *
-     * @param title The name if the sport.
+     * @param title The name of the sport.
      * @param info Information about the sport.
      */
     Sport(String title, String info) {
