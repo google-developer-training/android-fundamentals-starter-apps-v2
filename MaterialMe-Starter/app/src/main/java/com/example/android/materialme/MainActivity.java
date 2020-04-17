@@ -16,6 +16,7 @@
 
 package com.example.android.materialme;
 
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 .getStringArray(R.array.sports_titles);
         String[] sportsInfo = getResources()
                 .getStringArray(R.array.sports_info);
+        TypedArray sportsImagesResource=getResources().obtainTypedArray(R.array.sports_images);
 
         // Clear the existing data (to avoid duplication).
         mSportsData.clear();
@@ -72,9 +74,9 @@ public class MainActivity extends AppCompatActivity {
         // Create the ArrayList of Sports objects with titles and
         // information about each sport.
         for(int i=0;i<sportsList.length;i++){
-            mSportsData.add(new Sport(sportsList[i],sportsInfo[i]));
+            mSportsData.add(new Sport(sportsList[i],sportsInfo[i],sportsImagesResource.getResourceId(i,0)));
         }
-
+        sportsImagesResource.recycle();
         // Notify the adapter of the change.
         mAdapter.notifyDataSetChanged();
     }
