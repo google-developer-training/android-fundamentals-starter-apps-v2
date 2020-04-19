@@ -18,6 +18,7 @@ package com.example.android.materialme;
 
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,7 +26,10 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /***
  * Main Activity for the Material Me app, a mock sports news application
@@ -57,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
 
         // Get the data.
-        initializeData();
+        initializeData(savedInstanceState);
         // Item touch helper to delete items
         helper.attachToRecyclerView(mRecyclerView);
     }
@@ -85,28 +89,39 @@ public class MainActivity extends AppCompatActivity {
     });
     /**
      * Initialize the sports data from resources.
+     * @param savedInstanceState
      */
-    private void initializeData() {
-        // Get the resources from the XML file.
-        String[] sportsList = getResources()
-                .getStringArray(R.array.sports_titles);
-        String[] sportsInfo = getResources()
-                .getStringArray(R.array.sports_info);
-        TypedArray sportsImagesResource=getResources().obtainTypedArray(R.array.sports_images);
+    private void initializeData(Bundle savedInstanceState) {
+        if(savedInstanceState!=null && savedInstanceState.containsKey("sports")){
+            mSportsData.clear();
+            ArrayList<Sport>tempData= (ArrayList<Sport>) savedInstanceState.getSerializable("sports");
+            mSportsData.addAll(tempData);
+        }else{
+            // Get the resources from the XML file.
+            String[] sportsList = getResources().getStringArray(R.array.sports_titles);
+            String[] sportsInfo = getResources().getStringArray(R.array.sports_info);
+            TypedArray sportsImagesResource=getResources().obtainTypedArray(R.array.sports_images);
 
-        // Clear the existing data (to avoid duplication).
-        mSportsData.clear();
+            // Clear the existing data (to avoid duplication).
+            mSportsData.clear();
 
-        // Create the ArrayList of Sports objects with titles and
-        // information about each sport.
-        for(int i=0;i<sportsList.length;i++){
-            mSportsData.add(new Sport(sportsList[i],sportsInfo[i],sportsImagesResource.getResourceId(i,0)));
+            // Create the ArrayList of Sports objects with titles and
+            // information about each sport.
+            for(int i=0;i<sportsList.length;i++){
+                mSportsData.add(new Sport(sportsList[i],sportsInfo[i],sportsImagesResource.getResourceId(i,0)));
+            }
+            sportsImagesResource.recycle();
         }
-        sportsImagesResource.recycle();
         // Notify the adapter of the change.
         mAdapter.notifyDataSetChanged();
     }
 
     public void resetSports(View view) {
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("sports",mSportsData);
     }
 }
